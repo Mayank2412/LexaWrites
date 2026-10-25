@@ -166,7 +166,10 @@
     {
       "chapter_num": 5,
       "title": "Mid-Cycle Gas Exchange and Deficit Mitigation",
-      "focus": "Trace O2_produced_kg and net_O2_deficit_kg trends across Day 21 and Day 28."
+      "focus": "Trace O2_produced_kg and net_O2_deficit_kg trends across Day 21 and Day 28.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_5.md"
     },
     {
       "chapter_num": 6,
