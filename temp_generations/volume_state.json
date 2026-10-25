@@ -123,7 +123,10 @@
     {
       "chapter_num": 5,
       "title": "Continental Shelves, Trawlers, and Trenching Plows",
-      "focus": "Contrast the 17 mm deep-sea lightweight cable with the 50 mm double-armored shallow-water cable, explaining why fishing trawlers (40%) and ship anchors (30%) require burying cables 2 meters under the seabed."
+      "focus": "Contrast the 17 mm deep-sea lightweight cable with the 50 mm double-armored shallow-water cable, explaining why fishing trawlers (40%) and ship anchors (30%) require burying cables 2 meters under the seabed.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_5.md"
     },
     {
       "chapter_num": 6,
