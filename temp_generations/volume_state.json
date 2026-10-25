@@ -190,7 +190,10 @@
     {
       "chapter_num": 6,
       "title": "Velocity Throttling & High-Yield Recovery Windows",
-      "focus": "Analyze Day 5 velocity drop to 15 km and 5200 kg forage recovery."
+      "focus": "Analyze Day 5 velocity drop to 15 km and 5200 kg forage recovery.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_6.md"
     },
     {
       "chapter_num": 7,
