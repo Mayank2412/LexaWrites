@@ -137,14 +137,14 @@ class ProgrammaticBookPipeline:
 
                     WRITING & FORMATTING RULES:
                     1. HEADING: Begin immediately with: ### Chapter {ch_num}: {chapter_spec['title']}
-                    2. VOICE & CLARITY: Write 350 to 500 words of sharp, natural, human-grade non-fiction prose. Explain *why* the mechanics work in the real world, including engineering trade-offs, physical bottlenecks, and failure modes.
+                    2. VOICE & CLARITY: Write 400 to 600 words of sharp, engaging, human-grade explainer prose. Explain *how* and *why* the system works in the real world using concrete physical intuition, trade-offs, and failure modes.
                     3. NO AI SLOP OR JARGON STUFFING:
-                       - NEVER print JSON variable keys in prose (e.g., write "daily grain ration", NEVER write "C_daily" or "pack_mule_capacity_kg").
-                       - NEVER mention the Volume ID or state object in the text.
-                       - NEVER spell out decimal numbers in words (write "0.84 kg", NEVER "zero point eight four kilograms").
-                       - NEVER narrate elementary arithmetic (do not write "Multiplying X by Y yields Z"). State the operational insight directly.
-                    4. STRICT BAN ON LATEX: Do NOT use `$`, `$$`, `\\text`, `\\times`, or any LaTeX syntax. Use standard plain-text symbols and HTML/Unicode units (e.g., km/h, m², °C, kW).
-                    5. CLEAN COMPACT TABLE: Include exactly one Markdown table (maximum 4 columns, concise headers) that summarizes the key benchmarks for this chapter.
+                       - NEVER print JSON variable keys in prose (write "daily grain ration", NEVER "C_daily").
+                       - NEVER mention the Volume ID or reference dataset in the text.
+                       - NEVER spell out decimal numbers in words (write "0.15 dB/km", NEVER "zero point one five").
+                       - NEVER narrate elementary arithmetic (do not write "Multiplying X by Y yields Z").
+                    4. STRICT BAN ON LATEX: Do NOT use `$`, `$$`, `\\text`, `\\times`, or any LaTeX syntax. Use plain-text symbols and standard units (km/h, m², °C, kW).
+                    5. NO TABLES: Do NOT generate any Markdown tables. Use flowing paragraphs, 1 to 2 crisp subheadings (`####`), and at most one short bulleted list or blockquote (`>`) to highlight key specs.
                     6. BANNED WORDS: Do not use any of these words: {self.state['thematic_guardrails']['banned_adjectives']}.
                     {error_feedback}
                     """
