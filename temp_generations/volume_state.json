@@ -142,7 +142,10 @@
     {
       "chapter_num": 2,
       "title": "Hydraulic Architecture and Reservoir Mechanics",
-      "focus": "Analyze pump_flow_rate_lpm and reservoir_capacity_L limits."
+      "focus": "Analyze pump_flow_rate_lpm and reservoir_capacity_L limits.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_2.md"
     },
     {
       "chapter_num": 3,
