@@ -158,7 +158,10 @@
     {
       "chapter_num": 4,
       "title": "Early Cultivation Geometry and Yield Deficits",
-      "focus": "Model canopy_coverage_m2 expansion from Day 1 to Day 14 against the 0.05 yield constant."
+      "focus": "Model canopy_coverage_m2 expansion from Day 1 to Day 14 against the 0.05 yield constant.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_4.md"
     },
     {
       "chapter_num": 5,
