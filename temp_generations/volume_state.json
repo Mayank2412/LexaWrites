@@ -131,7 +131,10 @@
     {
       "chapter_num": 6,
       "title": "Deep-Sea Surgery: Finding and Splicing a Severed Cable",
-      "focus": "Detail how engineers pinpoint breaks within meters using Optical Time-Domain Reflectometry (OTDR), drag grapnels at 4,000 meters depth, and splice fibers aboard specialized repair ships."
+      "focus": "Detail how engineers pinpoint breaks within meters using Optical Time-Domain Reflectometry (OTDR), drag grapnels at 4,000 meters depth, and splice fibers aboard specialized repair ships.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_6.md"
     }
   ]
 }
