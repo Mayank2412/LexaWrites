@@ -134,7 +134,10 @@
     {
       "chapter_num": 1,
       "title": "System Variables and Baseline Respiration Constants",
-      "focus": "Define O2_req, N_crew, Y_plant, and A_cultivation constraints."
+      "focus": "Define O2_req, N_crew, Y_plant, and A_cultivation constraints.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_1.md"
     },
     {
       "chapter_num": 2,
