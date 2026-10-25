@@ -234,9 +234,8 @@ class ProgrammaticBookPipeline:
                 .front-matter {{ page-break-after: always; text-align: center; padding-top: 2.5in; }}
                 .copyright-page {{ page-break-after: always; padding-top: 5in; font-size: 8.5pt; text-align: left; }}
                 h3 {{ font-family: 'Arial', sans-serif; font-size: 13pt; border-bottom: 1px solid #333; padding-bottom: 4px; break-before: page; text-align: left; }}
-                table {{ width: 100%; table-layout: fixed; border-collapse: collapse; margin: 16px 0; font-size: 8.5pt; break-inside: avoid; word-wrap: break-word; }}
-                th, td {{ border: 1px solid #444; padding: 6px; text-align: left; vertical-align: top; }}
-                th {{ background-color: #f0f0f0; font-family: 'Arial', sans-serif; font-weight: bold; }}
+                h4 {{ font-family: 'Arial', sans-serif; font-size: 11pt; margin-top: 16px; margin-bottom: 6px; color: #222222; }}
+                blockquote {{ margin: 14px 0; padding: 8px 14px; border-left: 3px solid #333333; background-color: #f8f8f8; font-style: italic; font-size: 9.5pt; }}
             </style>
         </head>
         <body>
