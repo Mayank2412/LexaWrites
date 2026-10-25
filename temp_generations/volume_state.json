@@ -107,7 +107,10 @@
     {
       "chapter_num": 3,
       "title": "The 10,000-Volt Copper Spine and Seawater Grounding",
-      "focus": "Explain how shore Power Feeding Equipment (PFE) pushes 10,000V DC at 1.1 Amps through the cable's copper tube to power repeaters across oceans, and how single-end power feeding survives a ground fault."
+      "focus": "Explain how shore Power Feeding Equipment (PFE) pushes 10,000V DC at 1.1 Amps through the cable's copper tube to power repeaters across oceans, and how single-end power feeding survives a ground fault.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_3.md"
     },
     {
       "chapter_num": 4,
