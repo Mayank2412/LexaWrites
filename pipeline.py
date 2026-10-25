@@ -1,7 +1,7 @@
 import json
 import os
 import markdown
-from google import genai
+from openai import OpenAI
 from weasyprint import HTML
 from verifier import DeterministicVerifier
 
@@ -11,7 +11,13 @@ class ProgrammaticBookPipeline:
             self.state = json.load(f)
         self.volume_id = self.state["metadata"]["volume_id"]
         self.verifier = DeterministicVerifier(self.state)
-        self.client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        
+        # Point directly to OpenRouter's OpenAI-compatible API
+        self.client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.environ["LEXAWRITES"]
+        )
+        
         self.cache_dir = "build/chapters"
         os.makedirs(self.cache_dir, exist_ok=True)
         self.raw_chapters = {}
@@ -42,18 +48,18 @@ class ProgrammaticBookPipeline:
 
             CRITICAL RULES:
             1. Start with the exact heading: ### Chapter {ch_num}: {chapter_spec['title']}
-            2. Write at least 1,000 words in a purely declarative, active engineering voice.
+            2. Write at least 800 words in a purely declarative, active engineering voice.
             3. Include at least one Markdown table illustrating the metrics for this chapter.
             4. You are explicitly banned from using these words: {self.state['thematic_guardrails']['banned_adjectives']}.
-            5. CRITICAL: Every single number or digit you write (including section numbers, counts, or math results) MUST already exist verbatim inside the <state_object> JSON above. Do not invent new numbers, percentages, or dates. Use spelled-out words ("one", "two", "first") for general prose counting if the digit is not in the JSON.
             {error_feedback}
             """
 
-            response = self.client.models.generate_content(
-                model="gemini-3.8-flash",
-                contents=prompt
+            response = self.client.chat.completions.create(
+                model="meta-llama/llama-3-8b-instruct:free",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.2
             )
-            draft = response.text
+            draft = response.choices[0].message.content
 
             is_valid, errors = self.verifier.verify_segment(draft)
             if is_valid:
