@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "volume_id": "ROMAN_LOG_001",
+    "title": "The Roman Military Engine: Supply Line Matrix & Foraging Radii Math",
+    "subtitle": "Deterministic Operational Models of Legionary Subsistence",
+    "author": "LexaWrites Press",
+    "pillar": "Historical Logistics Operations"
+  },
+  "thematic_guardrails": {
+    "banned_adjectives": [
+      "efficient",
+      "brilliant",
+      "revolutionary",
+      "incredible",
+      "remarkable",
+      "seamless",
+      "delve"
+    ],
+    "require_markdown_table": true
+  },
+  "mathematical_core": {
+    "glossary": {
+      "C_daily": "Daily grain consumption requirement per legionnaire (kg)",
+      "N_legion": "Total active personnel count within the Legion footprint",
+      "R_forage": "Maximum effective operational foraging radius (km)",
+      "V_march": "Average daily marching velocity under full auxiliary load (km/day)"
+    },
+    "constants": {
+      "C_daily": 1.5,
+      "N_legion": 5000,
+      "R_forage": 12.0,
+      "V_march": 25.0,
+      "pack_mule_capacity_kg": 100,
+      "mules_per_legion": 1200,
+      "total_train_capacity_kg": 120000
+    }
+  },
+  "deterministic_matrices": {
+    "supply_schedule": [
+      {"day": 1, "marching_distance_km": 25, "grain_consumed_kg": 7500, "forage_yield_kg": 3200, "net_reserve_draw_kg": 4300},
+      {"day": 2, "marching_distance_km": 25, "grain_consumed_kg": 7500, "forage_yield_kg": 2900, "net_reserve_draw_kg": 4600},
+      {"day": 3, "marching_distance_km": 20, "grain_consumed_kg": 7500, "forage_yield_kg": 4100, "net_reserve_draw_kg": 3400},
+      {"day": 4, "marching_distance_km": 25, "grain_consumed_kg": 7500, "forage_yield_kg": 1800, "net_reserve_draw_kg": 5700},
+      {"day": 5, "marching_distance_km": 15, "grain_consumed_kg": 7500, "forage_yield_kg": 5200, "net_reserve_draw_kg": 2300},
+      {"day": 6, "marching_distance_km": 25, "grain_consumed_kg": 7500, "forage_yield_kg": 2500, "net_reserve_draw_kg": 5000},
+      {"day": 7, "marching_distance_km": 20, "grain_consumed_kg": 7500, "forage_yield_kg": 3800, "net_reserve_draw_kg": 3700}
+    ]
+  },
+  "chapters": [
+    {"chapter_num": 1, "title": "Structural Variables & Baseline Consumption Constants", "focus": "Define C_daily, N_legion, R_forage, and V_march with baseline consumption tables."},
+    {"chapter_num": 2, "title": "Pack Train Architecture & Mule Payload Matrices", "focus": "Analyze pack_mule_capacity_kg, mules_per_legion, and total_train_capacity_kg."},
+    {"chapter_num": 3, "title": "Marching Velocity vs. Caloric Burn Mechanics", "focus": "Detail V_march at 25.0 km/day and daily 7500 kg grain depletion."},
+    {"chapter_num": 4, "title": "Foraging Radii Geometry & Sweep Area Constraints", "focus": "Model R_forage at 12.0 km and foraging yield variance across Days 1 to 3."},
+    {"chapter_num": 5, "title": "Deficit Accumulation Across Arid Corridors", "focus": "Trace Day 4 yield contraction (1800 kg) and peak reserve draw (5700 kg)."},
+    {"chapter_num": 6, "title": "Velocity Throttling & High-Yield Recovery Windows", "focus": "Analyze Day 5 velocity drop to 15 km and 5200 kg forage recovery."},
+    {"chapter_num": 7, "title": "Seven-Day Cumulative Depletion & Reserve Auditing", "focus": "Synthesize the full 7-day supply_schedule matrix and net reserve draw."},
+    {"chapter_num": 8, "title": "Operational Failure Thresholds & Terminal Radii", "focus": "Audit train exhaustion limits against the 120000 kg initial capacity."}
+  ]
+}
