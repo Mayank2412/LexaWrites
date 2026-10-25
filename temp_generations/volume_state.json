@@ -182,7 +182,10 @@
     {
       "chapter_num": 5,
       "title": "Deficit Accumulation Across Arid Corridors",
-      "focus": "Trace Day 4 yield contraction (1800 kg) and peak reserve draw (5700 kg)."
+      "focus": "Trace Day 4 yield contraction (1800 kg) and peak reserve draw (5700 kg).",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_5.md"
     },
     {
       "chapter_num": 6,
