@@ -190,7 +190,10 @@
     {
       "chapter_num": 8,
       "title": "Operational Surplus Thresholds and System Autonomy",
-      "focus": "Audit the 0.96 kg net O2 surplus achieved at maximum hardware capacity."
+      "focus": "Audit the 0.96 kg net O2 surplus achieved at maximum hardware capacity.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_8.md"
     }
   ]
 }
