@@ -166,7 +166,10 @@
     {
       "chapter_num": 3,
       "title": "Marching Velocity vs. Caloric Burn Mechanics",
-      "focus": "Detail V_march at 25.0 km/day and daily 7500 kg grain depletion."
+      "focus": "Detail V_march at 25.0 km/day and daily 7500 kg grain depletion.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_3.md"
     },
     {
       "chapter_num": 4,
