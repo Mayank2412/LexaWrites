@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "volume_id": "ORBITAL_AGRI_002",
-    "title": "Orbital Hydroponics: O2 Yield and Biomass Cycling",
-    "subtitle": "Closed-Loop Life Support Matrices in Microgravity",
+    "volume_id": "SUBSEA_NET_003",
+    "title": "Undersea Arteries: How Subsea Fiber Optic Cables Power the Global Internet",
+    "subtitle": "An Engineering Explainer on Deep-Ocean Telecom, Repeaters, and Fault Recovery",
     "author": "LexaWrites Press",
-    "pillar": "Aerospace Bio-Engineering"
+    "pillar": "Global Infrastructure Explained"
   },
   "thematic_guardrails": {
     "banned_adjectives": [
@@ -15,185 +15,108 @@
       "remarkable",
       "seamless",
       "delve",
-      "innovative",
-      "crucial"
+      "magical",
+      "unbelievable"
     ],
-    "require_markdown_table": true
+    "require_markdown_table": false
   },
-  "mathematical_core": {
-    "glossary": {
-      "O2_req": "Daily oxygen requirement per crew member (kg)",
-      "N_crew": "Total crew personnel count",
-      "Y_plant": "Daily oxygen yield per square meter of crop canopy (kg/m2)",
-      "A_cultivation": "Total active cultivation area (m2)",
-      "W_transpiration": "Daily water recycled via canopy transpiration (L)"
+  "engineering_reference": {
+    "core_benchmarks": {
+      "global_data_share_pct": 99,
+      "deep_ocean_cable_diameter_mm": 17,
+      "shallow_armored_diameter_mm": 50,
+      "optical_attenuation_db_per_km": 0.15,
+      "repeater_spacing_km": 70,
+      "conductor_voltage_dc_v": 10000,
+      "conductor_current_amps": 1.1,
+      "fiber_pairs_per_cable": 16,
+      "capacity_per_pair_tbps": 24,
+      "total_system_capacity_tbps": 384,
+      "design_lifespan_years": 25
     },
-    "constants": {
-      "O2_req": 0.84,
-      "N_crew": 6,
-      "Y_plant": 0.05,
-      "A_cultivation": 120.0,
-      "pump_flow_rate_lpm": 15,
-      "reservoir_capacity_L": 2500,
-      "light_cycle_hours": 16
-    },
-    "allowed_number_pool": [
-      0.05,
-      0.84,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      14,
-      15,
-      16,
-      18,
-      20,
-      24,
-      30,
-      45,
-      50,
-      60,
-      75,
-      80,
-      90,
-      100,
-      120,
-      120.0,
-      150,
-      200,
-      250,
-      300,
-      400,
-      500,
-      750,
-      1000,
-      1500,
-      2000,
-      2500,
-      3000,
-      4000,
-      5000
-    ]
-  },
-  "deterministic_matrices": {
-    "biomass_schedule": [
+    "cable_layers_from_center": [
       {
-        "cycle_day": 1,
-        "canopy_coverage_m2": 20,
-        "O2_produced_kg": 1.0,
-        "water_consumed_L": 150,
-        "net_O2_deficit_kg": 4.04
+        "layer": 1,
+        "Component": "Silica Optical Fibers",
+        "Thickness": "0.25 mm",
+        "Role": "Carries laser light signals across 16 fiber pairs"
       },
       {
-        "cycle_day": 7,
-        "canopy_coverage_m2": 40,
-        "O2_produced_kg": 2.0,
-        "water_consumed_L": 300,
-        "net_O2_deficit_kg": 3.04
+        "layer": 2,
+        "Component": "Thixotropic Jelly & Copper Tube",
+        "Thickness": "2.5 mm",
+        "Role": "Blocks hydrogen ingress and conducts 10,000V DC power"
       },
       {
-        "cycle_day": 14,
-        "canopy_coverage_m2": 60,
-        "O2_produced_kg": 3.0,
-        "water_consumed_L": 450,
-        "net_O2_deficit_kg": 2.04
+        "layer": 3,
+        "Component": "High-Strength Steel Wires",
+        "Thickness": "6.0 mm",
+        "Role": "Provides mechanical tensile strength during ship laying"
       },
       {
-        "cycle_day": 21,
-        "canopy_coverage_m2": 80,
-        "O2_produced_kg": 4.0,
-        "water_consumed_L": 600,
-        "net_O2_deficit_kg": 1.04
+        "layer": 4,
+        "Component": "Polyethylene Insulation",
+        "Thickness": "8.0 mm",
+        "Role": "Insulates high-voltage copper from seawater ground"
+      }
+    ],
+    "fault_causes_distribution": [
+      {
+        "cause": "Commercial Bottom Trawling",
+        "Share": "40%",
+        "Depth Zone": "0 to 200 m",
+        "Mitigation": "Double steel wire armoring and 2 m seabed burial"
       },
       {
-        "cycle_day": 28,
-        "canopy_coverage_m2": 100,
-        "O2_produced_kg": 5.0,
-        "water_consumed_L": 750,
-        "net_O2_deficit_kg": 0.04
+        "cause": "Ship Anchors",
+        "Share": "30%",
+        "Depth Zone": "0 to 100 m",
+        "Mitigation": "Designated cable protection corridors and AIS monitoring"
       },
       {
-        "cycle_day": 35,
-        "canopy_coverage_m2": 120,
-        "O2_produced_kg": 6.0,
-        "water_consumed_L": 900,
-        "net_O2_surplus_kg": 0.96
+        "cause": "Subsea Earthquakes & Turbidity Currents",
+        "Share": "15%",
+        "Depth Zone": "2,000 to 6,000 m",
+        "Mitigation": "Slack routing around canyons and rapid ship splicing"
+      },
+      {
+        "cause": "Component & Repeater Wear",
+        "Share": "15%",
+        "Depth Zone": "All depths",
+        "Mitigation": "Redundant laser pumps and 25-year pressure housings"
       }
     ]
   },
   "chapters": [
     {
       "chapter_num": 1,
-      "title": "System Variables and Baseline Respiration Constants",
-      "focus": "Define O2_req, N_crew, Y_plant, and A_cultivation constraints.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_1.md"
+      "title": "The Garden Hose on the Abyssal Plain",
+      "focus": "Explain why 99% of intercontinental data travels through undersea fibers rather than satellites, and detail the 4 core physical layers that shrink a deep-sea cable down to 17 mm in diameter."
     },
     {
       "chapter_num": 2,
-      "title": "Hydraulic Architecture and Reservoir Mechanics",
-      "focus": "Analyze pump_flow_rate_lpm and reservoir_capacity_L limits.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_2.md"
+      "title": "Fighting Photon Loss: Optical Attenuation and Erbium Repeaters",
+      "focus": "Explain silica glass attenuation (0.15 dB/km) and how Erbium-Doped Fiber Amplifiers (EDFAs) placed every 70 km boost light signals purely optically without slowing them down to electronics."
     },
     {
       "chapter_num": 3,
-      "title": "Photoperiod Mechanics and Canopy Energy Transfer",
-      "focus": "Detail the 16-hour light cycle and its effect on initial seedling transpiration.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_3.md"
+      "title": "The 10,000-Volt Copper Spine and Seawater Grounding",
+      "focus": "Explain how shore Power Feeding Equipment (PFE) pushes 10,000V DC at 1.1 Amps through the cable's copper tube to power repeaters across oceans, and how single-end power feeding survives a ground fault."
     },
     {
       "chapter_num": 4,
-      "title": "Early Cultivation Geometry and Yield Deficits",
-      "focus": "Model canopy_coverage_m2 expansion from Day 1 to Day 14 against the 0.05 yield constant.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_4.md"
+      "title": "Wavelength Division Multiplexing and 384-Terabit Capacity",
+      "focus": "Explain how 16 hair-thin fiber pairs carry 24 Tbps each (384 Tbps total) by splitting laser light into dozens of distinct color wavelengths within the 1550 nm C-band window."
     },
     {
       "chapter_num": 5,
-      "title": "Mid-Cycle Gas Exchange and Deficit Mitigation",
-      "focus": "Trace O2_produced_kg and net_O2_deficit_kg trends across Day 21 and Day 28.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_5.md"
+      "title": "Continental Shelves, Trawlers, and Trenching Plows",
+      "focus": "Contrast the 17 mm deep-sea lightweight cable with the 50 mm double-armored shallow-water cable, explaining why fishing trawlers (40%) and ship anchors (30%) require burying cables 2 meters under the seabed."
     },
     {
       "chapter_num": 6,
-      "title": "Terminal Area Constraints and Output Optimization",
-      "focus": "Analyze the peak 120 m2 canopy footprint reached on Day 35.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_6.md"
-    },
-    {
-      "chapter_num": 7,
-      "title": "Cumulative Water Draw and Transpiration Auditing",
-      "focus": "Synthesize the 35-day water_consumed_L matrix against the 2500 L reservoir limits.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_7.md"
-    },
-    {
-      "chapter_num": 8,
-      "title": "Operational Surplus Thresholds and System Autonomy",
-      "focus": "Audit the 0.96 kg net O2 surplus achieved at maximum hardware capacity.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_8.md"
+      "title": "Deep-Sea Surgery: Finding and Splicing a Severed Cable",
+      "focus": "Detail how engineers pinpoint breaks within meters using Optical Time-Domain Reflectometry (OTDR), drag grapnels at 4,000 meters depth, and splice fibers aboard specialized repair ships."
     }
   ]
 }
