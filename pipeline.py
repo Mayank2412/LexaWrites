@@ -84,11 +84,11 @@ class ProgrammaticBookPipeline:
         try:
             subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=False)
             subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], check=False)
-            
+
             paths_to_add = [self.run_dir]
             if extra_path:
                 paths_to_add.append(extra_path)
-            
+
             subprocess.run(["git", "add"] + paths_to_add, check=False)
             diff = subprocess.run(["git", "diff", "--staged", "--quiet"], check=False)
             if diff.returncode != 0:
@@ -125,21 +125,27 @@ class ProgrammaticBookPipeline:
             for attempt in range(1, 4):
                 try:
                     prompt = f"""
-                    You are a deterministic technical documentarian. You are strictly bound by this Pipeline State Object:
-                    <state_object>
+                    You are a senior systems architect and subject-matter author writing a concise, high-signal technical explainer chapter.
+                    Use the reference dataset below as your factual anchor:
+                    <reference_data>
                     {json.dumps(self.state, indent=2)}
-                    </state_object>
+                    </reference_data>
 
-                    CHAPTER ASSIGNMENT:
-                    - Chapter Number: {ch_num}
-                    - Chapter Title: {chapter_spec['title']}
-                    - Operational Focus: {chapter_spec['focus']}
+                    CHAPTER BRIEF:
+                    - Chapter {ch_num}: {chapter_spec['title']}
+                    - Core Topic: {chapter_spec['focus']}
 
-                    CRITICAL RULES:
-                    1. Start with the exact heading: ### Chapter {ch_num}: {chapter_spec['title']}
-                    2. Write at least 800 words in a purely declarative, active engineering voice.
-                    3. Include at least one Markdown table illustrating the metrics for this chapter.
-                    4. You are explicitly banned from using these words: {self.state['thematic_guardrails']['banned_adjectives']}.
+                    WRITING & FORMATTING RULES:
+                    1. HEADING: Begin immediately with: ### Chapter {ch_num}: {chapter_spec['title']}
+                    2. VOICE & CLARITY: Write 350 to 500 words of sharp, natural, human-grade non-fiction prose. Explain *why* the mechanics work in the real world, including engineering trade-offs, physical bottlenecks, and failure modes.
+                    3. NO AI SLOP OR JARGON STUFFING:
+                       - NEVER print JSON variable keys in prose (e.g., write "daily grain ration", NEVER write "C_daily" or "pack_mule_capacity_kg").
+                       - NEVER mention the Volume ID or state object in the text.
+                       - NEVER spell out decimal numbers in words (write "0.84 kg", NEVER "zero point eight four kilograms").
+                       - NEVER narrate elementary arithmetic (do not write "Multiplying X by Y yields Z"). State the operational insight directly.
+                    4. STRICT BAN ON LATEX: Do NOT use `$`, `$$`, `\\text`, `\\times`, or any LaTeX syntax. Use standard plain-text symbols and HTML/Unicode units (e.g., km/h, m², °C, kW).
+                    5. CLEAN COMPACT TABLE: Include exactly one Markdown table (maximum 4 columns, concise headers) that summarizes the key benchmarks for this chapter.
+                    6. BANNED WORDS: Do not use any of these words: {self.state['thematic_guardrails']['banned_adjectives']}.
                     {error_feedback}
                     """
 
@@ -153,7 +159,6 @@ class ProgrammaticBookPipeline:
 
                     is_valid, errors = self.verifier.verify_segment(draft)
                     if is_valid:
-                        # Immediately write verified chapter and updated volume_state to temp_generations
                         self._write_file_atomic(cache_path, draft)
                         chapter_spec["status"] = "verified"
                         chapter_spec["verified_model"] = current_model
@@ -225,13 +230,13 @@ class ProgrammaticBookPipeline:
                     @bottom-left {{ content: none; }}
                     @bottom-right {{ content: none; }}
                 }}
-                body {{ font-family: 'Georgia', serif; font-size: 10.5pt; line-height: 1.55; color: #111111; text-align: justify; }}
+                body {{ font-family: 'Georgia', serif; font-size: 10.5pt; line-height: 1.55; color: #111111; text-align: left; }}
                 .front-matter {{ page-break-after: always; text-align: center; padding-top: 2.5in; }}
                 .copyright-page {{ page-break-after: always; padding-top: 5in; font-size: 8.5pt; text-align: left; }}
-                h3 {{ font-family: 'Arial', sans-serif; font-size: 14pt; border-bottom: 1px solid #333; padding-bottom: 4px; break-before: page; text-align: left; }}
-                table {{ width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 9pt; break-inside: avoid; }}
-                th, td {{ border: 1px solid #444; padding: 6px 8px; text-align: left; }}
-                th {{ background-color: #f0f0f0; font-family: 'Arial', sans-serif; }}
+                h3 {{ font-family: 'Arial', sans-serif; font-size: 13pt; border-bottom: 1px solid #333; padding-bottom: 4px; break-before: page; text-align: left; }}
+                table {{ width: 100%; table-layout: fixed; border-collapse: collapse; margin: 16px 0; font-size: 8.5pt; break-inside: avoid; word-wrap: break-word; }}
+                th, td {{ border: 1px solid #444; padding: 6px; text-align: left; vertical-align: top; }}
+                th {{ background-color: #f0f0f0; font-family: 'Arial', sans-serif; font-weight: bold; }}
             </style>
         </head>
         <body>
