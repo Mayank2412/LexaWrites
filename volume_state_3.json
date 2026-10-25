@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "volume_id": "SUBSEA_NET_003",
+    "title": "Undersea Arteries: How Subsea Fiber Optic Cables Power the Global Internet",
+    "subtitle": "An Engineering Explainer on Deep-Ocean Telecom, Repeaters, and Fault Recovery",
+    "author": "LexaWrites Press",
+    "pillar": "Global Infrastructure Explained"
+  },
+  "thematic_guardrails": {
+    "banned_adjectives": [
+      "efficient",
+      "brilliant",
+      "revolutionary",
+      "incredible",
+      "remarkable",
+      "seamless",
+      "delve",
+      "magical",
+      "unbelievable"
+    ],
+    "require_markdown_table": false
+  },
+  "engineering_reference": {
+    "core_benchmarks": {
+      "global_data_share_pct": 99,
+      "deep_ocean_cable_diameter_mm": 17,
+      "shallow_armored_diameter_mm": 50,
+      "optical_attenuation_db_per_km": 0.15,
+      "repeater_spacing_km": 70,
+      "conductor_voltage_dc_v": 10000,
+      "conductor_current_amps": 1.1,
+      "fiber_pairs_per_cable": 16,
+      "capacity_per_pair_tbps": 24,
+      "total_system_capacity_tbps": 384,
+      "design_lifespan_years": 25
+    },
+    "cable_layers_from_center": [
+      {"layer": 1, "Component": "Silica Optical Fibers", "Thickness": "0.25 mm", "Role": "Carries laser light signals across 16 fiber pairs"},
+      {"layer": 2, "Component": "Thixotropic Jelly & Copper Tube", "Thickness": "2.5 mm", "Role": "Blocks hydrogen ingress and conducts 10,000V DC power"},
+      {"layer": 3, "Component": "High-Strength Steel Wires", "Thickness": "6.0 mm", "Role": "Provides mechanical tensile strength during ship laying"},
+      {"layer": 4, "Component": "Polyethylene Insulation", "Thickness": "8.0 mm", "Role": "Insulates high-voltage copper from seawater ground"}
+    ],
+    "fault_causes_distribution": [
+      {"cause": "Commercial Bottom Trawling", "Share": "40%", "Depth Zone": "0 to 200 m", "Mitigation": "Double steel wire armoring and 2 m seabed burial"},
+      {"cause": "Ship Anchors", "Share": "30%", "Depth Zone": "0 to 100 m", "Mitigation": "Designated cable protection corridors and AIS monitoring"},
+      {"cause": "Subsea Earthquakes & Turbidity Currents", "Share": "15%", "Depth Zone": "2,000 to 6,000 m", "Mitigation": "Slack routing around canyons and rapid ship splicing"},
+      {"cause": "Component & Repeater Wear", "Share": "15%", "Depth Zone": "All depths", "Mitigation": "Redundant laser pumps and 25-year pressure housings"}
+    ]
+  },
+  "chapters": [
+    {
+      "chapter_num": 1,
+      "title": "The Garden Hose on the Abyssal Plain",
+      "focus": "Explain why 99% of intercontinental data travels through undersea fibers rather than satellites, and detail the 4 core physical layers that shrink a deep-sea cable down to 17 mm in diameter."
+    },
+    {
+      "chapter_num": 2,
+      "title": "Fighting Photon Loss: Optical Attenuation and Erbium Repeaters",
+      "focus": "Explain silica glass attenuation (0.15 dB/km) and how Erbium-Doped Fiber Amplifiers (EDFAs) placed every 70 km boost light signals purely optically without slowing them down to electronics."
+    },
+    {
+      "chapter_num": 3,
+      "title": "The 10,000-Volt Copper Spine and Seawater Grounding",
+      "focus": "Explain how shore Power Feeding Equipment (PFE) pushes 10,000V DC at 1.1 Amps through the cable's copper tube to power repeaters across oceans, and how single-end power feeding survives a ground fault."
+    },
+    {
+      "chapter_num": 4,
+      "title": "Wavelength Division Multiplexing and 384-Terabit Capacity",
+      "focus": "Explain how 16 hair-thin fiber pairs carry 24 Tbps each (384 Tbps total) by splitting laser light into dozens of distinct color wavelengths within the 1550 nm C-band window."
+    },
+    {
+      "chapter_num": 5,
+      "title": "Continental Shelves, Trawlers, and Trenching Plows",
+      "focus": "Contrast the 17 mm deep-sea lightweight cable with the 50 mm double-armored shallow-water cable, explaining why fishing trawlers (40%) and ship anchors (30%) require burying cables 2 meters under the seabed."
+    },
+    {
+      "chapter_num": 6,
+      "title": "Deep-Sea Surgery: Finding and Splicing a Severed Cable",
+      "focus": "Detail how engineers pinpoint breaks within meters using Optical Time-Domain Reflectometry (OTDR), drag grapnels at 4,000 meters depth, and splice fibers aboard specialized repair ships."
+    }
+  ]
+}
