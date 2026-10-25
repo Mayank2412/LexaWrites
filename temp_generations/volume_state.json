@@ -115,7 +115,10 @@
     {
       "chapter_num": 4,
       "title": "Wavelength Division Multiplexing and 384-Terabit Capacity",
-      "focus": "Explain how 16 hair-thin fiber pairs carry 24 Tbps each (384 Tbps total) by splitting laser light into dozens of distinct color wavelengths within the 1550 nm C-band window."
+      "focus": "Explain how 16 hair-thin fiber pairs carry 24 Tbps each (384 Tbps total) by splitting laser light into dozens of distinct color wavelengths within the 1550 nm C-band window.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_4.md"
     },
     {
       "chapter_num": 5,
