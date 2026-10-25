@@ -36,7 +36,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.LEXAWRITES }}
           STATE_FILE: ${{ github.event.inputs.state_file }}
-        run: python pipeline.py
+        run: python -u pipeline.py
 
       - name: Commit Verified Chapter Cache
         run: |
