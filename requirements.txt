@@ -1,4 +1,4 @@
 markdown==3.7
-weasyprint>=63.0
+weasyprint==68.0
 google-genai==0.3.0
 openai==1.52.0
