@@ -46,7 +46,7 @@ jobs:
 
       - name: Execute Pipeline
         env:
-          GEMINI_API_KEY: ${{ secrets.LEXAWRITES }}
+          LEXAWRITES: ${{ secrets.LEXAWRITES }}
           STATE_FILE: ${{ github.event.inputs.state_file }}
           MODEL_NAME: ${{ github.event.inputs.model_name }}
         run: python -u pipeline.py
