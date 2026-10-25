@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "volume_id": "ORBITAL_AGRI_002",
+    "title": "Orbital Hydroponics: O2 Yield and Biomass Cycling",
+    "subtitle": "Closed-Loop Life Support Matrices in Microgravity",
+    "author": "LexaWrites Press",
+    "pillar": "Aerospace Bio-Engineering"
+  },
+  "thematic_guardrails": {
+    "banned_adjectives": [
+      "efficient",
+      "brilliant",
+      "revolutionary",
+      "incredible",
+      "remarkable",
+      "seamless",
+      "delve",
+      "innovative",
+      "crucial"
+    ],
+    "require_markdown_table": true
+  },
+  "mathematical_core": {
+    "glossary": {
+      "O2_req": "Daily oxygen requirement per crew member (kg)",
+      "N_crew": "Total crew personnel count",
+      "Y_plant": "Daily oxygen yield per square meter of crop canopy (kg/m2)",
+      "A_cultivation": "Total active cultivation area (m2)",
+      "W_transpiration": "Daily water recycled via canopy transpiration (L)"
+    },
+    "constants": {
+      "O2_req": 0.84,
+      "N_crew": 6,
+      "Y_plant": 0.05,
+      "A_cultivation": 120.0,
+      "pump_flow_rate_lpm": 15,
+      "reservoir_capacity_L": 2500,
+      "light_cycle_hours": 16
+    },
+    "allowed_number_pool": [
+      0.05, 0.84, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 18, 20, 
+      24, 30, 45, 50, 60, 75, 80, 90, 100, 120, 120.0, 150, 200, 250, 300, 
+      400, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000
+    ]
+  },
+  "deterministic_matrices": {
+    "biomass_schedule": [
+      {"cycle_day": 1, "canopy_coverage_m2": 20, "O2_produced_kg": 1.0, "water_consumed_L": 150, "net_O2_deficit_kg": 4.04},
+      {"cycle_day": 7, "canopy_coverage_m2": 40, "O2_produced_kg": 2.0, "water_consumed_L": 300, "net_O2_deficit_kg": 3.04},
+      {"cycle_day": 14, "canopy_coverage_m2": 60, "O2_produced_kg": 3.0, "water_consumed_L": 450, "net_O2_deficit_kg": 2.04},
+      {"cycle_day": 21, "canopy_coverage_m2": 80, "O2_produced_kg": 4.0, "water_consumed_L": 600, "net_O2_deficit_kg": 1.04},
+      {"cycle_day": 28, "canopy_coverage_m2": 100, "O2_produced_kg": 5.0, "water_consumed_L": 750, "net_O2_deficit_kg": 0.04},
+      {"cycle_day": 35, "canopy_coverage_m2": 120, "O2_produced_kg": 6.0, "water_consumed_L": 900, "net_O2_surplus_kg": 0.96}
+    ]
+  },
+  "chapters": [
+    {"chapter_num": 1, "title": "System Variables and Baseline Respiration Constants", "focus": "Define O2_req, N_crew, Y_plant, and A_cultivation constraints."},
+    {"chapter_num": 2, "title": "Hydraulic Architecture and Reservoir Mechanics", "focus": "Analyze pump_flow_rate_lpm and reservoir_capacity_L limits."},
+    {"chapter_num": 3, "title": "Photoperiod Mechanics and Canopy Energy Transfer", "focus": "Detail the 16-hour light cycle and its effect on initial seedling transpiration."},
+    {"chapter_num": 4, "title": "Early Cultivation Geometry and Yield Deficits", "focus": "Model canopy_coverage_m2 expansion from Day 1 to Day 14 against the 0.05 yield constant."},
+    {"chapter_num": 5, "title": "Mid-Cycle Gas Exchange and Deficit Mitigation", "focus": "Trace O2_produced_kg and net_O2_deficit_kg trends across Day 21 and Day 28."},
+    {"chapter_num": 6, "title": "Terminal Area Constraints and Output Optimization", "focus": "Analyze the peak 120 m2 canopy footprint reached on Day 35."},
+    {"chapter_num": 7, "title": "Cumulative Water Draw and Transpiration Auditing", "focus": "Synthesize the 35-day water_consumed_L matrix against the 2500 L reservoir limits."},
+    {"chapter_num": 8, "title": "Operational Surplus Thresholds and System Autonomy", "focus": "Audit the 0.96 kg net O2 surplus achieved at maximum hardware capacity."}
+  ]
+}
