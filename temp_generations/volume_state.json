@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "volume_id": "ROMAN_LOG_001",
-    "title": "The Roman Military Engine: Supply Line Matrix & Foraging Radii Math",
-    "subtitle": "Deterministic Operational Models of Legionary Subsistence",
+    "volume_id": "ORBITAL_AGRI_002",
+    "title": "Orbital Hydroponics: O2 Yield and Biomass Cycling",
+    "subtitle": "Closed-Loop Life Support Matrices in Microgravity",
     "author": "LexaWrites Press",
-    "pillar": "Historical Logistics Operations"
+    "pillar": "Aerospace Bio-Engineering"
   },
   "thematic_guardrails": {
     "banned_adjectives": [
@@ -14,27 +14,32 @@
       "incredible",
       "remarkable",
       "seamless",
-      "delve"
+      "delve",
+      "innovative",
+      "crucial"
     ],
     "require_markdown_table": true
   },
   "mathematical_core": {
     "glossary": {
-      "C_daily": "Daily grain consumption requirement per legionnaire (kg)",
-      "N_legion": "Total active personnel count within the Legion footprint",
-      "R_forage": "Maximum effective operational foraging radius (km)",
-      "V_march": "Average daily marching velocity under full auxiliary load (km/day)"
+      "O2_req": "Daily oxygen requirement per crew member (kg)",
+      "N_crew": "Total crew personnel count",
+      "Y_plant": "Daily oxygen yield per square meter of crop canopy (kg/m2)",
+      "A_cultivation": "Total active cultivation area (m2)",
+      "W_transpiration": "Daily water recycled via canopy transpiration (L)"
     },
     "constants": {
-      "C_daily": 1.5,
-      "N_legion": 5000,
-      "R_forage": 12.0,
-      "V_march": 25.0,
-      "pack_mule_capacity_kg": 100,
-      "mules_per_legion": 1200,
-      "total_train_capacity_kg": 120000
+      "O2_req": 0.84,
+      "N_crew": 6,
+      "Y_plant": 0.05,
+      "A_cultivation": 120.0,
+      "pump_flow_rate_lpm": 15,
+      "reservoir_capacity_L": 2500,
+      "light_cycle_hours": 16
     },
     "allowed_number_pool": [
+      0.05,
+      0.84,
       1,
       2,
       3,
@@ -47,30 +52,22 @@
       10,
       11,
       12,
-      13,
       14,
       15,
       16,
-      17,
       18,
-      19,
       20,
-      21,
-      22,
-      23,
       24,
-      25,
       30,
-      35,
-      40,
       45,
       50,
       60,
-      70,
       75,
       80,
       90,
       100,
+      120,
+      120.0,
       150,
       200,
       250,
@@ -84,132 +81,95 @@
       2500,
       3000,
       4000,
-      5000,
-      7500,
-      10000,
-      25000,
-      50000,
-      100000,
-      120000
+      5000
     ]
   },
   "deterministic_matrices": {
-    "supply_schedule": [
+    "biomass_schedule": [
       {
-        "day": 1,
-        "marching_distance_km": 25,
-        "grain_consumed_kg": 7500,
-        "forage_yield_kg": 3200,
-        "net_reserve_draw_kg": 4300
+        "cycle_day": 1,
+        "canopy_coverage_m2": 20,
+        "O2_produced_kg": 1.0,
+        "water_consumed_L": 150,
+        "net_O2_deficit_kg": 4.04
       },
       {
-        "day": 2,
-        "marching_distance_km": 25,
-        "grain_consumed_kg": 7500,
-        "forage_yield_kg": 2900,
-        "net_reserve_draw_kg": 4600
+        "cycle_day": 7,
+        "canopy_coverage_m2": 40,
+        "O2_produced_kg": 2.0,
+        "water_consumed_L": 300,
+        "net_O2_deficit_kg": 3.04
       },
       {
-        "day": 3,
-        "marching_distance_km": 20,
-        "grain_consumed_kg": 7500,
-        "forage_yield_kg": 4100,
-        "net_reserve_draw_kg": 3400
+        "cycle_day": 14,
+        "canopy_coverage_m2": 60,
+        "O2_produced_kg": 3.0,
+        "water_consumed_L": 450,
+        "net_O2_deficit_kg": 2.04
       },
       {
-        "day": 4,
-        "marching_distance_km": 25,
-        "grain_consumed_kg": 7500,
-        "forage_yield_kg": 1800,
-        "net_reserve_draw_kg": 5700
+        "cycle_day": 21,
+        "canopy_coverage_m2": 80,
+        "O2_produced_kg": 4.0,
+        "water_consumed_L": 600,
+        "net_O2_deficit_kg": 1.04
       },
       {
-        "day": 5,
-        "marching_distance_km": 15,
-        "grain_consumed_kg": 7500,
-        "forage_yield_kg": 5200,
-        "net_reserve_draw_kg": 2300
+        "cycle_day": 28,
+        "canopy_coverage_m2": 100,
+        "O2_produced_kg": 5.0,
+        "water_consumed_L": 750,
+        "net_O2_deficit_kg": 0.04
       },
       {
-        "day": 6,
-        "marching_distance_km": 25,
-        "grain_consumed_kg": 7500,
-        "forage_yield_kg": 2500,
-        "net_reserve_draw_kg": 5000
-      },
-      {
-        "day": 7,
-        "marching_distance_km": 20,
-        "grain_consumed_kg": 7500,
-        "forage_yield_kg": 3800,
-        "net_reserve_draw_kg": 3700
+        "cycle_day": 35,
+        "canopy_coverage_m2": 120,
+        "O2_produced_kg": 6.0,
+        "water_consumed_L": 900,
+        "net_O2_surplus_kg": 0.96
       }
     ]
   },
   "chapters": [
     {
       "chapter_num": 1,
-      "title": "Structural Variables & Baseline Consumption Constants",
-      "focus": "Define C_daily, N_legion, R_forage, and V_march with baseline consumption tables.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_1.md"
+      "title": "System Variables and Baseline Respiration Constants",
+      "focus": "Define O2_req, N_crew, Y_plant, and A_cultivation constraints."
     },
     {
       "chapter_num": 2,
-      "title": "Pack Train Architecture & Mule Payload Matrices",
-      "focus": "Analyze pack_mule_capacity_kg, mules_per_legion, and total_train_capacity_kg.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_2.md"
+      "title": "Hydraulic Architecture and Reservoir Mechanics",
+      "focus": "Analyze pump_flow_rate_lpm and reservoir_capacity_L limits."
     },
     {
       "chapter_num": 3,
-      "title": "Marching Velocity vs. Caloric Burn Mechanics",
-      "focus": "Detail V_march at 25.0 km/day and daily 7500 kg grain depletion.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_3.md"
+      "title": "Photoperiod Mechanics and Canopy Energy Transfer",
+      "focus": "Detail the 16-hour light cycle and its effect on initial seedling transpiration."
     },
     {
       "chapter_num": 4,
-      "title": "Foraging Radii Geometry & Sweep Area Constraints",
-      "focus": "Model R_forage at 12.0 km and foraging yield variance across Days 1 to 3.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_4.md"
+      "title": "Early Cultivation Geometry and Yield Deficits",
+      "focus": "Model canopy_coverage_m2 expansion from Day 1 to Day 14 against the 0.05 yield constant."
     },
     {
       "chapter_num": 5,
-      "title": "Deficit Accumulation Across Arid Corridors",
-      "focus": "Trace Day 4 yield contraction (1800 kg) and peak reserve draw (5700 kg).",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_5.md"
+      "title": "Mid-Cycle Gas Exchange and Deficit Mitigation",
+      "focus": "Trace O2_produced_kg and net_O2_deficit_kg trends across Day 21 and Day 28."
     },
     {
       "chapter_num": 6,
-      "title": "Velocity Throttling & High-Yield Recovery Windows",
-      "focus": "Analyze Day 5 velocity drop to 15 km and 5200 kg forage recovery.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_6.md"
+      "title": "Terminal Area Constraints and Output Optimization",
+      "focus": "Analyze the peak 120 m2 canopy footprint reached on Day 35."
     },
     {
       "chapter_num": 7,
-      "title": "Seven-Day Cumulative Depletion & Reserve Auditing",
-      "focus": "Synthesize the full 7-day supply_schedule matrix and net reserve draw.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_7.md"
+      "title": "Cumulative Water Draw and Transpiration Auditing",
+      "focus": "Synthesize the 35-day water_consumed_L matrix against the 2500 L reservoir limits."
     },
     {
       "chapter_num": 8,
-      "title": "Operational Failure Thresholds & Terminal Radii",
-      "focus": "Audit train exhaustion limits against the 120000 kg initial capacity.",
-      "status": "verified",
-      "verified_model": "gemini-3.5-flash-lite",
-      "cache_file": "ch_8.md"
+      "title": "Operational Surplus Thresholds and System Autonomy",
+      "focus": "Audit the 0.96 kg net O2 surplus achieved at maximum hardware capacity."
     }
   ]
 }
