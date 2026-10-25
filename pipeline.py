@@ -77,20 +77,25 @@ class ProgrammaticBookPipeline:
         state_json = json.dumps(self.state, indent=2)
         self._write_file_atomic(self.local_state_path, state_json)
 
-    def _sync_cache_to_git(self, commit_message):
-        """Commits and pushes temp_generations incrementally after each verified chapter in CI."""
+    def _sync_cache_to_git(self, commit_message, extra_path=None):
+        """Commits and pushes specified paths incrementally in CI."""
         if os.getenv("GITHUB_ACTIONS") != "true":
             return
         try:
             subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=False)
             subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], check=False)
-            subprocess.run(["git", "add", self.run_dir], check=False)
+            
+            paths_to_add = [self.run_dir]
+            if extra_path:
+                paths_to_add.append(extra_path)
+            
+            subprocess.run(["git", "add"] + paths_to_add, check=False)
             diff = subprocess.run(["git", "diff", "--staged", "--quiet"], check=False)
             if diff.returncode != 0:
                 subprocess.run(["git", "commit", "-m", commit_message], check=False)
                 subprocess.run(["git", "pull", "--rebase"], check=False)
                 subprocess.run(["git", "push"], check=False)
-                print(f"Synced {self.run_dir}/ to repository: {commit_message}")
+                print(f"Synced paths {paths_to_add} to repository: {commit_message}")
         except Exception as e:
             print(f"Incremental git sync warning (non-fatal): {e}")
 
@@ -188,10 +193,14 @@ class ProgrammaticBookPipeline:
         self.compile_typesetting(full_markdown)
 
     def compile_typesetting(self, full_markdown):
-        """Converts raw Markdown into an Amazon KDP print-compliant 6x9 PDF."""
+        """Converts raw Markdown into an Amazon KDP print-compliant 6x9 PDF and commits it to output/."""
         print("Initializing WeasyPrint Typesetting Engine...")
         html_content = markdown.markdown(full_markdown, extensions=["tables", "fenced_code"])
         meta = self.state["metadata"]
+
+        output_dir = "output"
+        os.makedirs(output_dir, exist_ok=True)
+        pdf_filename = os.path.join(output_dir, f"output_v{self.volume_id}.pdf")
 
         styled_html = f"""
         <html>
@@ -240,9 +249,9 @@ class ProgrammaticBookPipeline:
         </body>
         </html>
         """
-        pdf_filename = f"output_v{self.volume_id}.pdf"
         HTML(string=styled_html).write_pdf(pdf_filename)
         print(f"Print-Ready PDF compiled successfully as {pdf_filename}.")
+        self._sync_cache_to_git(f"Add compiled PDF {pdf_filename}", extra_path=output_dir)
 
 
 if __name__ == "__main__":
