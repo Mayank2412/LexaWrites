@@ -1,7 +1,9 @@
 import json
 import os
+import time
 import markdown
-from openai import OpenAI
+from google import genai
+from google.genai.errors import APIError
 from weasyprint import HTML
 from verifier import DeterministicVerifier
 
@@ -11,13 +13,12 @@ class ProgrammaticBookPipeline:
             self.state = json.load(f)
         self.volume_id = self.state["metadata"]["volume_id"]
         self.verifier = DeterministicVerifier(self.state)
+        self.client = genai.Client(api_key=os.environ["LEXAWRITES"])
         
-        # Point directly to OpenRouter's OpenAI-compatible API
-        self.client = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=os.environ["LEXAWRITES"]
-        )
-        
+        # Read the model choice dynamically from the workflow dropdown selection
+        self.model_name = os.getenv("MODEL_NAME", "gemini-3.8-flash")
+        print(f"Initializing pipeline execution using model: {self.model_name}")
+
         self.cache_dir = "build/chapters"
         os.makedirs(self.cache_dir, exist_ok=True)
         self.raw_chapters = {}
@@ -31,47 +32,57 @@ class ProgrammaticBookPipeline:
             with open(cache_path, "r") as f:
                 return f.read()
 
-        print(f"Executing Generation for Chapter {ch_num}: {chapter_spec['title']}...")
+        print(f"Executing Generation for Chapter {ch_num}: {chapter_spec['title']} using {self.model_name}...")
         error_feedback = ""
 
-        for attempt in range(1, 4):
-            prompt = f"""
-            You are a deterministic technical documentarian. You are strictly bound by this Pipeline State Object:
-            <state_object>
-            {json.dumps(self.state, indent=2)}
-            </state_object>
+        for attempt in range(1, 5):
+            try:
+                prompt = f"""
+                You are a deterministic technical documentarian. You are strictly bound by this Pipeline State Object:
+                <state_object>
+                {json.dumps(self.state, indent=2)}
+                </state_object>
 
-            CHAPTER ASSIGNMENT:
-            - Chapter Number: {ch_num}
-            - Chapter Title: {chapter_spec['title']}
-            - Operational Focus: {chapter_spec['focus']}
+                CHAPTER ASSIGNMENT:
+                - Chapter Number: {ch_num}
+                - Chapter Title: {chapter_spec['title']}
+                - Operational Focus: {chapter_spec['focus']}
 
-            CRITICAL RULES:
-            1. Start with the exact heading: ### Chapter {ch_num}: {chapter_spec['title']}
-            2. Write at least 800 words in a purely declarative, active engineering voice.
-            3. Include at least one Markdown table illustrating the metrics for this chapter.
-            4. You are explicitly banned from using these words: {self.state['thematic_guardrails']['banned_adjectives']}.
-            {error_feedback}
-            """
+                CRITICAL RULES:
+                1. Start with the exact heading: ### Chapter {ch_num}: {chapter_spec['title']}
+                2. Write at least 800 words in a purely declarative, active engineering voice.
+                3. Include at least one Markdown table illustrating the metrics for this chapter.
+                4. You are explicitly banned from using these words: {self.state['thematic_guardrails']['banned_adjectives']}.
+                {error_feedback}
+                """
 
-            response = self.client.chat.completions.create(
-                model="meta-llama/llama-3-8b-instruct:free",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2
-            )
-            draft = response.choices[0].message.content
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt
+                )
+                draft = response.text
 
-            is_valid, errors = self.verifier.verify_segment(draft)
-            if is_valid:
-                with open(cache_path, "w") as f:
-                    f.write(draft)
-                print(f"Chapter {ch_num} passed verification on attempt {attempt}.")
-                return draft
-            else:
-                print(f"Chapter {ch_num} failed attempt {attempt}: {errors}")
-                error_feedback = "\nPREVIOUS ATTEMPT FAILED VERIFICATION. FIX THESE EXACT ERRORS:\n" + "\n".join(errors)
+                is_valid, errors = self.verifier.verify_segment(draft)
+                if is_valid:
+                    with open(cache_path, "w") as f:
+                        f.write(draft)
+                    print(f"Chapter {ch_num} passed verification on attempt {attempt}.")
+                    # Pace requests to respect free-tier RPM limits across newer models
+                    time.sleep(10)
+                    return draft
+                else:
+                    print(f"Chapter {ch_num} failed verification attempt {attempt}: {errors}")
+                    error_feedback = "\nPREVIOUS ATTEMPT FAILED VERIFICATION. FIX THESE EXACT ERRORS:\n" + "\n".join(errors)
 
-        raise RuntimeError(f"Chapter {ch_num} failed verification after 3 attempts.")
+            except APIError as e:
+                print(f"API Error on Chapter {ch_num} (Attempt {attempt}/4): {e}")
+                if attempt == 4:
+                    raise e
+                sleep_time = 15 * attempt
+                print(f"Backing off for {sleep_time} seconds due to rate limit/service load...")
+                time.sleep(sleep_time)
+
+        raise RuntimeError(f"Chapter {ch_num} failed generation after max attempts.")
 
     def run_pipeline(self):
         ordered_keys = []
