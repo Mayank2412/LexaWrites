@@ -198,7 +198,10 @@
     {
       "chapter_num": 7,
       "title": "Seven-Day Cumulative Depletion & Reserve Auditing",
-      "focus": "Synthesize the full 7-day supply_schedule matrix and net reserve draw."
+      "focus": "Synthesize the full 7-day supply_schedule matrix and net reserve draw.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_7.md"
     },
     {
       "chapter_num": 8,
