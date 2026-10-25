@@ -1,47 +1,98 @@
 import json
 import os
 import shutil
+import subprocess
 import time
 import markdown
+import pydyf
 from google import genai
 from google.genai.errors import APIError
+
+# Compatibility shim in case pip cache retains WeasyPrint 62.x with pydyf >= 0.11.0
+if not hasattr(pydyf.Stream, "transform") and hasattr(pydyf.Stream, "set_matrix"):
+    pydyf.Stream.transform = pydyf.Stream.set_matrix
+if not hasattr(pydyf.Stream, "text_matrix") and hasattr(pydyf.Stream, "set_text_matrix"):
+    pydyf.Stream.text_matrix = pydyf.Stream.set_text_matrix
+
 from weasyprint import HTML
 from verifier import DeterministicVerifier
 
+
 class ProgrammaticBookPipeline:
     def __init__(self, state_file):
-        # 1. Setup isolated 'temp_generations' run directory
+        # 1. Setup isolated 'temp_generations' transient cache directory
         self.run_dir = "temp_generations"
         os.makedirs(self.run_dir, exist_ok=True)
-        
+
+        with open(state_file, "r", encoding="utf-8") as f:
+            incoming_state = json.load(f)
+
         # Determine local state path inside run directory
-        local_state_path = os.path.join(self.run_dir, "volume_state.json")
-        
-        if not os.path.exists(local_state_path):
-            # Fresh run: Copy the input state file into temp_generations
-            shutil.copyfile(state_file, local_state_path)
+        self.local_state_path = os.path.join(self.run_dir, "volume_state.json")
+
+        if os.path.exists(self.local_state_path):
+            with open(self.local_state_path, "r", encoding="utf-8") as f:
+                cached_state = json.load(f)
+            if cached_state.get("metadata", {}).get("volume_id") != incoming_state.get("metadata", {}).get("volume_id"):
+                print("New volume_id detected. Clearing stale temp_generations/ cache...")
+                shutil.rmtree(self.run_dir, ignore_errors=True)
+                os.makedirs(self.run_dir, exist_ok=True)
+
+        if not os.path.exists(self.local_state_path):
+            self.state = incoming_state
+            self._write_state_to_cache()
             print(f"Initialized fresh run directory in {self.run_dir}/ with {state_file}")
+            self._sync_cache_to_git(f"Initialize volume_state.json in {self.run_dir}/")
         else:
             print(f"Resuming run from existing state inside {self.run_dir}/")
+            with open(self.local_state_path, "r", encoding="utf-8") as f:
+                self.state = json.load(f)
 
-        with open(local_state_path, 'r') as f:
-            self.state = json.load(f)
-            
         self.volume_id = self.state["metadata"]["volume_id"]
         self.verifier = DeterministicVerifier(self.state)
         self.client = genai.Client(api_key=os.environ["LEXAWRITES"])
-        
-        # Eligible model pool for 503 auto-switching fallback order
-        self.model_pool = [
+
+        # Deduplicated model pool for 503/429/404 auto-switching fallback order
+        default_pool = [
             os.getenv("MODEL_NAME", "gemini-3.8-flash"),
             "gemini-3.6-flash",
             "gemini-3.5-flash-lite",
             "gemini-3.1-flash-lite",
             "gemini-3-flash",
-            "gemini-2.5-flash"
+            "gemini-2.5-flash",
         ]
-        
+        self.model_pool = list(dict.fromkeys(default_pool))
+
         self.raw_chapters = {}
+
+    def _write_file_atomic(self, path, content):
+        """Writes and immediately flushes content to disk inside temp_generations."""
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+            f.flush()
+            os.fsync(f.fileno())
+
+    def _write_state_to_cache(self):
+        """Persists the current volume_state.json into temp_generations immediately."""
+        state_json = json.dumps(self.state, indent=2)
+        self._write_file_atomic(self.local_state_path, state_json)
+
+    def _sync_cache_to_git(self, commit_message):
+        """Commits and pushes temp_generations incrementally after each verified chapter in CI."""
+        if os.getenv("GITHUB_ACTIONS") != "true":
+            return
+        try:
+            subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=False)
+            subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], check=False)
+            subprocess.run(["git", "add", self.run_dir], check=False)
+            diff = subprocess.run(["git", "diff", "--staged", "--quiet"], check=False)
+            if diff.returncode != 0:
+                subprocess.run(["git", "commit", "-m", commit_message], check=False)
+                subprocess.run(["git", "pull", "--rebase"], check=False)
+                subprocess.run(["git", "push"], check=False)
+                print(f"Synced {self.run_dir}/ to repository: {commit_message}")
+        except Exception as e:
+            print(f"Incremental git sync warning (non-fatal): {e}")
 
     def generate_chapter(self, chapter_spec):
         ch_num = chapter_spec["chapter_num"]
@@ -51,16 +102,21 @@ class ProgrammaticBookPipeline:
         # 2. Check if chapter is already generated in temp_generations (Smart Resume)
         if os.path.exists(cache_path):
             print(f"Resuming: Loading already generated Chapter {ch_num} from {self.run_dir}/...")
-            with open(cache_path, "r") as f:
-                return f.read()
+            with open(cache_path, "r", encoding="utf-8") as f:
+                cached_draft = f.read()
+            if chapter_spec.get("status") != "verified":
+                chapter_spec["status"] = "verified"
+                chapter_spec["cache_file"] = chapter_filename
+                self._write_state_to_cache()
+            return cached_draft
 
         print(f"Executing Generation for Chapter {ch_num}: {chapter_spec['title']}...")
         error_feedback = ""
 
-        # Auto-switch logic across model pool on 503 errors
-        for model_idx, current_model in enumerate(self.model_pool):
+        # Auto-switch logic across model pool on capacity/availability errors
+        for current_model in self.model_pool:
             print(f"Attempting generation with model tier: {current_model}")
-            
+
             for attempt in range(1, 4):
                 try:
                     prompt = f"""
@@ -84,15 +140,25 @@ class ProgrammaticBookPipeline:
 
                     response = self.client.models.generate_content(
                         model=current_model,
-                        contents=prompt
+                        contents=prompt,
                     )
-                    draft = response.text
+                    draft = (response.text or "").strip()
+                    if draft.startswith("```"):
+                        draft = draft.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
 
                     is_valid, errors = self.verifier.verify_segment(draft)
                     if is_valid:
-                        with open(cache_path, "w") as f:
-                            f.write(draft)
-                        print(f"Chapter {ch_num} passed verification using {current_model}.")
+                        # Immediately write verified chapter and updated volume_state to temp_generations
+                        self._write_file_atomic(cache_path, draft)
+                        chapter_spec["status"] = "verified"
+                        chapter_spec["verified_model"] = current_model
+                        chapter_spec["cache_file"] = chapter_filename
+                        self._write_state_to_cache()
+
+                        print(f"Chapter {ch_num} passed verification using {current_model}. Saved to {cache_path}.")
+                        self._sync_cache_to_git(
+                            f"Cache verified Chapter {ch_num} ({self.volume_id}) in {self.run_dir}/"
+                        )
                         time.sleep(8)
                         return draft
                     else:
@@ -101,11 +167,10 @@ class ProgrammaticBookPipeline:
 
                 except APIError as e:
                     print(f"API Error ({e.code if hasattr(e, 'code') else 'Unknown'}) on {current_model}: {e}")
-                    # Catch 503 Service Unavailable or 429 Rate Limit
-                    if "503" in str(e) or "429" in str(e) or "UNAVAILABLE" in str(e):
-                        print(f"Capacity block encountered on {current_model}. Triggering auto-switch to next model in pool...")
-                        break # Break current model attempts and jump to next model in pool
-                    
+                    if any(code in str(e) for code in ("503", "429", "404", "UNAVAILABLE", "NOT_FOUND")):
+                        print(f"Capacity/availability block encountered on {current_model}. Triggering auto-switch to next model in pool...")
+                        break
+
                     if attempt == 3:
                         raise e
                     time.sleep(10 * attempt)
@@ -125,7 +190,7 @@ class ProgrammaticBookPipeline:
     def compile_typesetting(self, full_markdown):
         """Converts raw Markdown into an Amazon KDP print-compliant 6x9 PDF."""
         print("Initializing WeasyPrint Typesetting Engine...")
-        html_content = markdown.markdown(full_markdown, extensions=['tables', 'fenced_code'])
+        html_content = markdown.markdown(full_markdown, extensions=["tables", "fenced_code"])
         meta = self.state["metadata"]
 
         styled_html = f"""
@@ -178,6 +243,7 @@ class ProgrammaticBookPipeline:
         pdf_filename = f"output_v{self.volume_id}.pdf"
         HTML(string=styled_html).write_pdf(pdf_filename)
         print(f"Print-Ready PDF compiled successfully as {pdf_filename}.")
+
 
 if __name__ == "__main__":
     state_path = os.getenv("STATE_FILE", "volume_state.json")
