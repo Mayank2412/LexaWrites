@@ -174,7 +174,10 @@
     {
       "chapter_num": 4,
       "title": "Foraging Radii Geometry & Sweep Area Constraints",
-      "focus": "Model R_forage at 12.0 km and foraging yield variance across Days 1 to 3."
+      "focus": "Model R_forage at 12.0 km and foraging yield variance across Days 1 to 3.",
+      "status": "verified",
+      "verified_model": "gemini-3.5-flash-lite",
+      "cache_file": "ch_4.md"
     },
     {
       "chapter_num": 5,
