@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import time
 import markdown
 from google import genai
@@ -9,80 +10,107 @@ from verifier import DeterministicVerifier
 
 class ProgrammaticBookPipeline:
     def __init__(self, state_file):
-        with open(state_file, 'r') as f:
+        # 1. Setup isolated 'temp_generations' run directory
+        self.run_dir = "temp_generations"
+        os.makedirs(self.run_dir, exist_ok=True)
+        
+        # Determine local state path inside run directory
+        local_state_path = os.path.join(self.run_dir, "volume_state.json")
+        
+        if not os.path.exists(local_state_path):
+            # Fresh run: Copy the input state file into temp_generations
+            shutil.copyfile(state_file, local_state_path)
+            print(f"Initialized fresh run directory in {self.run_dir}/ with {state_file}")
+        else:
+            print(f"Resuming run from existing state inside {self.run_dir}/")
+
+        with open(local_state_path, 'r') as f:
             self.state = json.load(f)
+            
         self.volume_id = self.state["metadata"]["volume_id"]
         self.verifier = DeterministicVerifier(self.state)
         self.client = genai.Client(api_key=os.environ["LEXAWRITES"])
         
-        # Read the model choice dynamically from the workflow dropdown selection
-        self.model_name = os.getenv("MODEL_NAME", "gemini-3.8-flash")
-        print(f"Initializing pipeline execution using model: {self.model_name}")
-
-        self.cache_dir = "build/chapters"
-        os.makedirs(self.cache_dir, exist_ok=True)
+        # Eligible model pool for 503 auto-switching fallback order
+        self.model_pool = [
+            os.getenv("MODEL_NAME", "gemini-3.8-flash"),
+            "gemini-3.6-flash",
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite",
+            "gemini-3-flash",
+            "gemini-2.5-flash"
+        ]
+        
         self.raw_chapters = {}
 
     def generate_chapter(self, chapter_spec):
         ch_num = chapter_spec["chapter_num"]
-        cache_path = os.path.join(self.cache_dir, f"ch_{ch_num}.md")
+        chapter_filename = f"ch_{ch_num}.md"
+        cache_path = os.path.join(self.run_dir, chapter_filename)
 
+        # 2. Check if chapter is already generated in temp_generations (Smart Resume)
         if os.path.exists(cache_path):
-            print(f"Loading verified Chapter {ch_num} from cache...")
+            print(f"Resuming: Loading already generated Chapter {ch_num} from {self.run_dir}/...")
             with open(cache_path, "r") as f:
                 return f.read()
 
-        print(f"Executing Generation for Chapter {ch_num}: {chapter_spec['title']} using {self.model_name}...")
+        print(f"Executing Generation for Chapter {ch_num}: {chapter_spec['title']}...")
         error_feedback = ""
 
-        for attempt in range(1, 5):
-            try:
-                prompt = f"""
-                You are a deterministic technical documentarian. You are strictly bound by this Pipeline State Object:
-                <state_object>
-                {json.dumps(self.state, indent=2)}
-                </state_object>
+        # Auto-switch logic across model pool on 503 errors
+        for model_idx, current_model in enumerate(self.model_pool):
+            print(f"Attempting generation with model tier: {current_model}")
+            
+            for attempt in range(1, 4):
+                try:
+                    prompt = f"""
+                    You are a deterministic technical documentarian. You are strictly bound by this Pipeline State Object:
+                    <state_object>
+                    {json.dumps(self.state, indent=2)}
+                    </state_object>
 
-                CHAPTER ASSIGNMENT:
-                - Chapter Number: {ch_num}
-                - Chapter Title: {chapter_spec['title']}
-                - Operational Focus: {chapter_spec['focus']}
+                    CHAPTER ASSIGNMENT:
+                    - Chapter Number: {ch_num}
+                    - Chapter Title: {chapter_spec['title']}
+                    - Operational Focus: {chapter_spec['focus']}
 
-                CRITICAL RULES:
-                1. Start with the exact heading: ### Chapter {ch_num}: {chapter_spec['title']}
-                2. Write at least 800 words in a purely declarative, active engineering voice.
-                3. Include at least one Markdown table illustrating the metrics for this chapter.
-                4. You are explicitly banned from using these words: {self.state['thematic_guardrails']['banned_adjectives']}.
-                {error_feedback}
-                """
+                    CRITICAL RULES:
+                    1. Start with the exact heading: ### Chapter {ch_num}: {chapter_spec['title']}
+                    2. Write at least 800 words in a purely declarative, active engineering voice.
+                    3. Include at least one Markdown table illustrating the metrics for this chapter.
+                    4. You are explicitly banned from using these words: {self.state['thematic_guardrails']['banned_adjectives']}.
+                    {error_feedback}
+                    """
 
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=prompt
-                )
-                draft = response.text
+                    response = self.client.models.generate_content(
+                        model=current_model,
+                        contents=prompt
+                    )
+                    draft = response.text
 
-                is_valid, errors = self.verifier.verify_segment(draft)
-                if is_valid:
-                    with open(cache_path, "w") as f:
-                        f.write(draft)
-                    print(f"Chapter {ch_num} passed verification on attempt {attempt}.")
-                    # Pace requests to respect free-tier RPM limits across newer models
-                    time.sleep(10)
-                    return draft
-                else:
-                    print(f"Chapter {ch_num} failed verification attempt {attempt}: {errors}")
-                    error_feedback = "\nPREVIOUS ATTEMPT FAILED VERIFICATION. FIX THESE EXACT ERRORS:\n" + "\n".join(errors)
+                    is_valid, errors = self.verifier.verify_segment(draft)
+                    if is_valid:
+                        with open(cache_path, "w") as f:
+                            f.write(draft)
+                        print(f"Chapter {ch_num} passed verification using {current_model}.")
+                        time.sleep(8)
+                        return draft
+                    else:
+                        print(f"Chapter {ch_num} failed verification attempt {attempt}: {errors}")
+                        error_feedback = "\nPREVIOUS ATTEMPT FAILED VERIFICATION. FIX THESE EXACT ERRORS:\n" + "\n".join(errors)
 
-            except APIError as e:
-                print(f"API Error on Chapter {ch_num} (Attempt {attempt}/4): {e}")
-                if attempt == 4:
-                    raise e
-                sleep_time = 15 * attempt
-                print(f"Backing off for {sleep_time} seconds due to rate limit/service load...")
-                time.sleep(sleep_time)
+                except APIError as e:
+                    print(f"API Error ({e.code if hasattr(e, 'code') else 'Unknown'}) on {current_model}: {e}")
+                    # Catch 503 Service Unavailable or 429 Rate Limit
+                    if "503" in str(e) or "429" in str(e) or "UNAVAILABLE" in str(e):
+                        print(f"Capacity block encountered on {current_model}. Triggering auto-switch to next model in pool...")
+                        break # Break current model attempts and jump to next model in pool
+                    
+                    if attempt == 3:
+                        raise e
+                    time.sleep(10 * attempt)
 
-        raise RuntimeError(f"Chapter {ch_num} failed generation after max attempts.")
+        raise RuntimeError(f"Chapter {ch_num} failed generation across all models in pool due to capacity limits.")
 
     def run_pipeline(self):
         ordered_keys = []
@@ -147,8 +175,9 @@ class ProgrammaticBookPipeline:
         </body>
         </html>
         """
-        HTML(string=styled_html).write_pdf(f"output_v{self.volume_id}.pdf")
-        print("Print-Ready PDF compiled successfully.")
+        pdf_filename = f"output_v{self.volume_id}.pdf"
+        HTML(string=styled_html).write_pdf(pdf_filename)
+        print(f"Print-Ready PDF compiled successfully as {pdf_filename}.")
 
 if __name__ == "__main__":
     state_path = os.getenv("STATE_FILE", "volume_state.json")
