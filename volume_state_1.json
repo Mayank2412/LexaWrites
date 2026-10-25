@@ -16,7 +16,7 @@
       "seamless",
       "delve"
     ],
-    "require_markdown_table": true
+    "require_markdown_table": false
   },
   "mathematical_core": {
     "glossary": {
